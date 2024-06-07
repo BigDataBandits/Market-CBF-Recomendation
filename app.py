@@ -71,7 +71,7 @@ def recommend_top_selling_products(combined_df, top_n=10):
     top_selling_products = combined_df.groupby('nama').agg({'harga_pound': 'sum'}).reset_index()
     top_selling_products = top_selling_products.sort_values(by='harga_pound', ascending=False)
     top_selling_products = top_selling_products.merge(combined_df[['nama', 'nama_toko', 'harga_pound', 'unit', 'kategori']], on='nama').drop_duplicates()
-    return top_selling_products.head(top_n)
+    return top_selling_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(top_n)
 
 @st.cache_data
 # Function to recommend best priced products
@@ -79,13 +79,13 @@ def recommend_best_priced_products(combined_df, top_n=10):
     average_price_per_unit = combined_df['harga_pound'].mean()
     best_priced_products = combined_df[combined_df['harga_pound'] < average_price_per_unit]
     best_priced_products = best_priced_products.drop_duplicates(subset=['nama']).sort_values(by='harga_pound')
-    return best_priced_products.head(top_n)
+    return best_priced_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(top_n)
 
 @st.cache_data
 # Function to recommend random products
 def recommend_random_products(combined_df, top_n=10):
     random_products = combined_df.sample(n=top_n)
-    return random_products
+    return random_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(10)
 
 @st.cache_data
 # Fungsi rekomendasi produk berdasarkan kategori terpopuler
