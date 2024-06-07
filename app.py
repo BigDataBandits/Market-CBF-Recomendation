@@ -165,17 +165,17 @@ elif choice == "Recommendation by Name":
 elif choice == "Top Selling Products":
     st.subheader("Top Selling Products")
     top_selling_products = recommend_top_selling_products(all_data)
-    st.table(top_selling_products)
+    st.table(top_selling_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
 
 elif choice == "Best Priced Products":
     st.subheader("Best Priced Products")
     best_priced_products = recommend_best_priced_products(all_data)
-    st.table(best_priced_products)
+    st.table(best_priced_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
 
 elif choice == "Random Products":
     st.subheader("Random Products")
     random_products = recommend_random_products(all_data)
-    st.table(random_products)
+    st.table(random_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
 
 elif choice == "Cheapest Products by Category":
     st.subheader("Cheapest Products by Category")
@@ -184,4 +184,4 @@ elif choice == "Cheapest Products by Category":
     if category:
         category_products = all_data[all_data['kategori'] == category]
         cheapest_products = category_products.sort_values(by='harga_per_unit').head(10)
-        display_table(cheapest_products)
+        display_table(cheapest_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
