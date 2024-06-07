@@ -70,22 +70,22 @@ def show_recommendations(product):
 def recommend_top_selling_products(combined_df, top_n=10):
     top_selling_products = combined_df.groupby('nama').agg({'harga_pound': 'sum'}).reset_index()
     top_selling_products = top_selling_products.sort_values(by='harga_pound', ascending=False)
-    top_selling_products = top_selling_products.merge(combined_df[['nama', 'nama_toko', 'harga_pound', 'unit', 'kategori']], on='nama').drop_duplicates()
-    return top_selling_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(top_n)
+    top_selling_products = top_selling_products.merge(combined_df[['nama', 'nama_toko', 'harga_per_unit', 'unit', 'kategori']], on='nama').drop_duplicates()
+    return top_selling_products.head(top_n)
 
 @st.cache_data
 # Function to recommend best priced products
 def recommend_best_priced_products(combined_df, top_n=10):
-    average_price_per_unit = combined_df['harga_pound'].mean()
-    best_priced_products = combined_df[combined_df['harga_pound'] < average_price_per_unit]
-    best_priced_products = best_priced_products.drop_duplicates(subset=['nama']).sort_values(by='harga_pound')
-    return best_priced_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(top_n)
+    average_price_per_unit = combined_df['harga_per_unit'].mean()
+    best_priced_products = combined_df[combined_df['harga_per_unit'] < average_price_per_unit]
+    best_priced_products = best_priced_products.drop_duplicates(subset=['nama']).sort_values(by='harga_per_unit')
+    return best_priced_products.head(top_n)
 
 @st.cache_data
 # Function to recommend random products
 def recommend_random_products(combined_df, top_n=10):
     random_products = combined_df.sample(n=top_n)
-    return random_products[['nama', 'harga_pound', 'nama_toko', 'kategori']].head(10)
+    return random_products
 
 @st.cache_data
 # Fungsi rekomendasi produk berdasarkan kategori terpopuler
@@ -100,10 +100,10 @@ def recommend_cheapest_products_by_category(combined_df):
         if 1 <= category_choice <= len(unique_categories):
             selected_category = unique_categories[category_choice - 1]
             category_products = combined_df[combined_df['kategori'] == selected_category]
-            cheapest_products = category_products.sort_values(by='harga_pound').head(10)
+            cheapest_products = category_products.sort_values(by='harga_per_unit').head(10)
             if not cheapest_products.empty:
                 print(f"\nRekomendasi Produk dengan Harga Per Unit Termurah dari Kategori: {selected_category}")
-                display_table(cheapest_products[['nama_toko', 'nama', 'harga_pound', 'unit', 'kategori', 'harga_per_unit']])
+                display_table(cheapest_products[['nama_toko', 'nama', 'harga_per_unit', 'unit', 'kategori', 'harga_per_unit']])
             else:
                 print(f"Tidak ada produk yang ditemukan dalam kategori '{selected_category}'.")
         else:
@@ -165,17 +165,17 @@ elif choice == "Recommendation by Name":
 elif choice == "Top Selling Products":
     st.subheader("Top Selling Products")
     top_selling_products = recommend_top_selling_products(all_data)
-    st.table(top_selling_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
+    st.table(top_selling_products)
 
 elif choice == "Best Priced Products":
     st.subheader("Best Priced Products")
     best_priced_products = recommend_best_priced_products(all_data)
-    st.table(best_priced_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
+    st.table(best_priced_products)
 
 elif choice == "Random Products":
     st.subheader("Random Products")
     random_products = recommend_random_products(all_data)
-    st.table(random_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
+    st.table(random_products)
 
 elif choice == "Cheapest Products by Category":
     st.subheader("Cheapest Products by Category")
@@ -184,4 +184,4 @@ elif choice == "Cheapest Products by Category":
     if category:
         category_products = all_data[all_data['kategori'] == category]
         cheapest_products = category_products.sort_values(by='harga_per_unit').head(10)
-        display_table(cheapest_products[['nama', 'harga_pound', 'nama_toko', 'kategori']])
+        display_table(cheapest_products)
